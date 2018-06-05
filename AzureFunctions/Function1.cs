@@ -10,13 +10,12 @@ namespace AzureFunctions
 {
     public static class Function1
     {
-        [FunctionName("Function1")]
+        [FunctionName("CallGoogle")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
-
-
-            // parse query parameter
+            string location = req.GetQueryNameValuePairs()
+                .FirstOrDefault(q => string.Compare(q.Key, "site", true) == 0).Value;
             string name = req.GetQueryNameValuePairs()
                 .FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0)
                 .Value;
@@ -30,7 +29,7 @@ namespace AzureFunctions
 
             return name == null
                 ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
-                : req.CreateResponse(HttpStatusCode.OK, "Hello " + name);
+                : req.CreateResponse(HttpStatusCode.OK, "Hello " + name +" Your requested site is "+location);
         }
     }
 }
